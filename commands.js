@@ -1,7 +1,7 @@
 const { Markup } = require('telegraf');
 
 module.exports.startCommand = (ctx) => {
-    const appUrl = process.env.APP_URL || "https://nftbot-zaq3.onrender.com";
+    const appUrl = "https://arhippticyn.github.io/nftbot/";
 
     ctx.reply("Привет! Нажми кнопку, чтобы открыть мини-приложение.", 
         Markup.inlineKeyboard([
@@ -9,3 +9,4 @@ module.exports.startCommand = (ctx) => {
         ])
     );
 };
+
