@@ -3,7 +3,7 @@ const fs = require('fs');
 
 const appUrl = "https://danikkkkk12.github.io/nftbot/";
 const agreementUrl = "https://example.com/user-agreement";
-const imagePath = "/images/nft.png";
+const imagePath = "./images/nft.png";
 
 module.exports.startCommand = (ctx) => {
     ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) }, { caption: "Добро пожаловать!" })
