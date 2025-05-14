@@ -1,5 +1,5 @@
-require('dotenv').config();
 const { Telegraf } = require('telegraf');
+require('dotenv').config();
 
 const commands = require('./commands.js');
 const events = require('./events.js');
@@ -12,6 +12,8 @@ if (!process.env.TELEGRAM_BOT_TOKEN) {
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 bot.start(commands.startCommand);
+commands.buttonActions(bot);
+
 bot.on('new_chat_members', events.userJoined);
 
 bot.launch()
