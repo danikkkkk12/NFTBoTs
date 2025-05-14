@@ -8,7 +8,7 @@ const imagePath = "./images/nft.png";
 module.exports.startCommand = (ctx) => {
     ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) })
         .then(() => {
-            ctx.reply("", Markup.inlineKeyboard([
+            ctx.reply("⬇ Выбери действие ниже:", Markup.inlineKeyboard([
                 [Markup.button.webApp("🚀 Открыть приложение", appUrl)],
                 [Markup.button.webApp("📜 User Agreement", agreementUrl)], 
                 [Markup.button.callback("🌐 Join Community", "community")],
