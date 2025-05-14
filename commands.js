@@ -1,7 +1,7 @@
 const { Markup } = require('telegraf');
 
 module.exports.startCommand = (ctx) => {
-    const appUrl = "https://arhippticyn.github.io/nftbot/";
+    const appUrl = "https://danikkkkk12.github.io/Nike/";
 
     ctx.reply("Привет! Нажми кнопку, чтобы открыть мини-приложение.", 
         Markup.inlineKeyboard([
