@@ -6,17 +6,15 @@ const agreementUrl = "https://example.com/user-agreement";
 const imagePath = "./images/nft.png";
 
 module.exports.startCommand = (ctx) => {
-    ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) }, { caption: "Добро пожаловать!" })
-        .then(() => {
-            ctx.reply("Выбери действие:", 
-                Markup.inlineKeyboard([
-                    [Markup.button.webApp("🚀 Открыть приложение", appUrl)],
-                    [Markup.button.webApp("📜 User Agreement", agreementUrl)], 
-                    [Markup.button.callback("🌐 Join Community", "community")],
-                    [Markup.button.callback("❓ Support", "support")]
-                ])
-            );
-        });
+    ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) }, {
+        caption: "Добро пожаловать!",
+        reply_markup: Markup.inlineKeyboard([
+            [Markup.button.webApp("🚀 Открыть приложение", appUrl)],
+            [Markup.button.webApp("📜 User Agreement", agreementUrl)], 
+            [Markup.button.callback("🌐 Join Community", "community")],
+            [Markup.button.callback("❓ Support", "support")]
+        ])
+    });
 };
 
 module.exports.buttonActions = (bot) => {
