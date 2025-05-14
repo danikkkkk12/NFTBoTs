@@ -1,7 +1,7 @@
 const { Markup } = require('telegraf');
 
 const appUrl = "https://danikkkkk12.github.io/nftbot/";
-const agreementUrl = "сылка на соглашение"; 
+const agreementUrl = "https://example.com/user-agreement"; 
 
 module.exports.startCommand = (ctx) => {
     ctx.reply("Привет! Выбери действие:", 
