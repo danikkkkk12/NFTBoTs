@@ -2,9 +2,9 @@
   "name": "nftbots",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "bot.js",
   "scripts": {
-    "test": "node server/server.js"
+    "test": "node bot.js"
   },
   "keywords": [],
   "author": "",
