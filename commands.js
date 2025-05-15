@@ -3,10 +3,10 @@ const fs = require('fs');
 
 const appUrl = "https://danikkkkk12.github.io/nftbot/";
 const agreementUrl = "https://example.com/user-agreement";
-const imagePath = "./images/nft.png";
+const videoPath = "./content/intro.mp4"; 
 
 module.exports.startCommand = (ctx) => {
-    ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) })
+    ctx.replyWithVideo({ source: fs.createReadStream(videoPath) })
         .then(() => {
             ctx.reply("⬇ Выбери действие ниже:", Markup.inlineKeyboard([
                 [Markup.button.webApp("🚀 Открыть приложение", appUrl)],
