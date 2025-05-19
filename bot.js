@@ -24,46 +24,37 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const commands = require("./commands.js");
 const events = require("./events.js");
+const User = require("./models/user"); // Добавлен импорт модели
 
 const bot = new Telegraf(process.env.TELEGRAM_BOT_TOKEN);
 
 mongoose
   .connect(process.env.mongoURI)
-  .then(() => {
+  .then(async () => {
     console.log("✅ Успешное подключение к MongoDB");
 
-    // 📌 Реєстрація команд і івентів тільки після підключення до БД
+    // Убедимся, что индексы созданы правильно
+    await User.syncIndexes();
+
+    // Регистрация команд и событий
     bot.start(commands.startCommand);
     commands.buttonActions(bot);
     bot.on("new_chat_members", events.userJoined);
 
-    bot.command("start", async (ctx) => {
-      try {
-        const tgId = ctx.from.id;
-
-        let user = await User.findOne({ telegramId: tgId });
-
-        if (!user) {
-          user = await User.create({
-            username: ctx.from.username || "",
-            firstName: ctx.from.first_name || "NoName",
-            telegramId: tgId,
-          });
-          console.log("🆕 Створено нового користувача:", user.username);
-        }
-
-        ctx.reply(`💰 Твій баланс: ${user.balance} монет`);
-      } catch (err) {
-        console.error("❌ Помилка при /balance:", err);
-        ctx.reply("⚠️ Сталася помилка при отриманні балансу.");
-      }
-    });
-
-    bot
-      .launch()
+    bot.launch()
       .then(() => console.log("✅ Бот запущен и работает!"))
       .catch((err) => console.error("❌ Ошибка запуска бота:", err));
   })
   .catch((err) => {
     console.error("❌ Ошибка подключения к MongoDB:", err);
+    process.exit(1); // Завершаем процесс при ошибке подключения
   });
+
+// Обработка ошибок бота
+bot.catch((err) => {
+  console.error('❌ Ошибка Telegraf:', err);
+});
+
+// Graceful shutdown
+process.once('SIGINT', () => bot.stop('SIGINT'));
+process.once('SIGTERM', () => bot.stop('SIGTERM'));
