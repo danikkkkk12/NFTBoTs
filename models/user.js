@@ -63,7 +63,8 @@ const userSchema = new Schema(
     },
     lastActive: { 
       type: Date, 
-      default: Date.now 
+      default: Date.now,
+      index: true 
     },
     isAdmin: { 
       type: Boolean, 
@@ -76,6 +77,9 @@ const userSchema = new Schema(
     autoIndex: true
   }
 );
+
+// Добавляем индекс для lastActive
+userSchema.index({ lastActive: -1 });
 
 userSchema.statics.syncUserIndexes = async function() {
   try {

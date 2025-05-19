@@ -11,7 +11,6 @@ module.exports.startCommand = async (ctx) => {
   const { username, first_name, last_name } = ctx.from;
 
   try {
-    // Отримання аватара користувача (або стандарт)
     let avatarUrl = "default-avatar-url.jpg";
     try {
       const photos = await ctx.telegram.getUserProfilePhotos(tgId);
@@ -24,7 +23,6 @@ module.exports.startCommand = async (ctx) => {
       console.warn("⚠️ Не вдалося отримати аватар:", err.message);
     }
 
-    // Створення або оновлення користувача
     const updatedUser = await User.findOneAndUpdate(
       { telegramId: tgId },
       {
@@ -33,6 +31,7 @@ module.exports.startCommand = async (ctx) => {
           firstName: first_name || "NoName",
           lastName: last_name || undefined,
           avatar: avatarUrl,
+          lastActive: new Date()
         },
         $setOnInsert: {
           telegramId: tgId,
@@ -46,10 +45,8 @@ module.exports.startCommand = async (ctx) => {
       }
     );
 
-    // Надсилання фото
     await ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) });
 
-    // Надсилання клавіатури
     await ctx.reply(
       "⬇ Выбери действие ниже:",
       Markup.inlineKeyboard([
@@ -72,11 +69,27 @@ module.exports.startCommand = async (ctx) => {
 };
 
 module.exports.buttonActions = (bot) => {
-  bot.action("community", (ctx) => {
+  bot.action("community", async (ctx) => {
+    await User.findOneAndUpdate(
+      { telegramId: ctx.from.id },
+      { $set: { lastActive: new Date() } }
+    );
     ctx.reply("Присоединяйтесь к нашему сообществу: @your_community_link");
   });
 
-  bot.action("support", (ctx) => {
+  bot.action("support", async (ctx) => {
+    await User.findOneAndUpdate(
+      { telegramId: ctx.from.id },
+      { $set: { lastActive: new Date() } }
+    );
     ctx.reply("Свяжитесь с поддержкой: @support_bot");
+  });
+
+  // Обработчик для всех web_app действий
+  bot.on('web_app_data', async (ctx) => {
+    await User.findOneAndUpdate(
+      { telegramId: ctx.from.id },
+      { $set: { lastActive: new Date() } }
+    );
   });
 };
