@@ -6,7 +6,7 @@ const agreementUrl = "https://example.com/user-agreement";
 const imagePath = "./content/nft.png"; 
 
 module.exports.startCommand = (ctx) => {
-    ctx.replyWithVideo({ source: fs.createReadStream(imagePath) })
+    ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) })
         .then(() => {
             ctx.reply("⬇ Выбери действие ниже:", Markup.inlineKeyboard([
                 [Markup.button.webApp("🚀 Открыть приложение 🚀", appUrl)],
