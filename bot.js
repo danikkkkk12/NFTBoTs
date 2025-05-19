@@ -38,8 +38,7 @@ mongoose
     commands.buttonActions(bot);
     bot.on("new_chat_members", events.userJoined);
 
-    // 💰 Команда /balance
-    bot.command("balance", async (ctx) => {
+    bot.command("start", async (ctx) => {
       try {
         const tgId = ctx.from.id;
 
