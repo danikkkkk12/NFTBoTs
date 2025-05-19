@@ -77,9 +77,9 @@ const userSchema = new Schema(
   }
 );
 
-userSchema.statics.syncIndexes = async function() {
+userSchema.statics.syncUserIndexes = async function() {
   try {
-    await this.syncIndexes();
+    await this.model('User').syncIndexes();
     console.log('✅ Индексы пользователя синхронизированы');
   } catch (err) {
     console.error('❌ Ошибка синхронизации индексов:', err);
@@ -88,8 +88,7 @@ userSchema.statics.syncIndexes = async function() {
 
 const User = mongoose.model("User", userSchema);
 
-User.createIndexes()
-  .then(() => console.log('✅ Индексы модели User созданы'))
-  .catch(err => console.error('❌ Ошибка создания индексов:', err));
+User.syncUserIndexes();
 
 module.exports = User;
+
