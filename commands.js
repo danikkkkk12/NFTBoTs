@@ -7,53 +7,66 @@ const agreementUrl = "https://example.com/user-agreement";
 const imagePath = "./content/nft.png";
 
 module.exports.startCommand = async (ctx) => {
-  try {
-    const tgId = ctx.from.id;
+  const tgId = ctx.from.id;
+  const { username, first_name, last_name } = ctx.from;
 
-    // Отправка фото
+  try {
+    // Отримання аватара користувача (або стандарт)
+    let avatarUrl = "default-avatar-url.jpg";
+    try {
+      const photos = await ctx.telegram.getUserProfilePhotos(tgId);
+      if (photos.total_count > 0) {
+        const fileId = photos.photos[0][0].file_id;
+        const file = await ctx.telegram.getFile(fileId);
+        avatarUrl = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file.file_path}`;
+      }
+    } catch (err) {
+      console.warn("⚠️ Не вдалося отримати аватар:", err.message);
+    }
+
+    // Створення або оновлення користувача
+    const updatedUser = await User.findOneAndUpdate(
+      { telegramId: tgId },
+      {
+        $set: {
+          username: username || undefined,
+          firstName: first_name || "NoName",
+          lastName: last_name || undefined,
+          avatar: avatarUrl,
+        },
+        $setOnInsert: {
+          telegramId: tgId,
+          balance: 0,
+        }
+      },
+      {
+        upsert: true,
+        new: true,
+        setDefaultsOnInsert: true,
+      }
+    );
+
+    // Надсилання фото
     await ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) });
 
-    // Отправка клавиатуры
+    // Надсилання клавіатури
     await ctx.reply(
       "⬇ Выбери действие ниже:",
       Markup.inlineKeyboard([
         [Markup.button.webApp("🚀 Открыть приложение 🚀", appUrl)],
         [Markup.button.webApp("📜 User Agreement 📜", agreementUrl)],
         [Markup.button.callback("🌐 Join Community 🌐", "community")],
-        [Markup.button.callback("❓ Support", "support")],
+        [Markup.button.callback("❓ Support", "support")]
       ])
     );
 
-    // Поиск или создание пользователя
-    let user = await User.findOne({ telegramId: tgId });
-    
-    if (!user) {
-      user = await User.findOneAndUpdate(
-        { telegramId: tgId },
-        {
-          username: ctx.from.username || undefined, // Используем undefined вместо пустой строки
-          firstName: ctx.from.first_name || "NoName",
-          telegramId: tgId,
-          $setOnInsert: { balance: 0 } // Устанавливаем баланс только при создании
-        },
-        { 
-          upsert: true,
-          new: true,
-          setDefaultsOnInsert: true
-        }
-      );
-      console.log("🆕 Создан новый пользователь:", user.telegramId);
-    }
-
-    await ctx.reply(`💰 Твой баланс: ${user.balance} монет`);
   } catch (err) {
     if (err.code === 11000) {
-      // Если дублирование, просто получаем существующего пользователя
-      const user = await User.findOne({ telegramId: ctx.from.id });
-      await ctx.reply(`💰 Твой баланс: ${user.balance} монет`);
+      console.error("⚠️ Конфлікт унікального поля:", err.keyValue);
+      await ctx.reply("❌ Помилка: дані вже існують (наприклад, номер телефону).");
     } else {
-      console.error("❌ Ошибка при /start:", err);
-      await ctx.reply("⚠️ Произошла ошибка. Попробуйте позже.");
+      console.error("❌ Помилка при /start:", err);
+      await ctx.reply("⚠️ Виникла помилка. Спробуйте пізніше.");
     }
   }
 };
