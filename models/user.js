@@ -15,6 +15,7 @@ const userSchema = new Schema(
       type: String,
       match: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/,
       unique: true,
+      sparse: true,
     },
     avatar: { type: String, default: "default-avatar-url.jpg" },
 
