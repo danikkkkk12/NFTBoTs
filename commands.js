@@ -3,16 +3,16 @@ const fs = require('fs');
 
 const appUrl = "https://danikkkkk12.github.io/nftbot/";
 const agreementUrl = "https://example.com/user-agreement";
-const videoPath = "./content/intro.mp4"; 
+const imagePath = "./content/nft.png"; 
 
 module.exports.startCommand = (ctx) => {
-    ctx.replyWithVideo({ source: fs.createReadStream(videoPath) })
+    ctx.replyWithVideo({ source: fs.createReadStream(imagePath) })
         .then(() => {
             ctx.reply("⬇ Выбери действие ниже:", Markup.inlineKeyboard([
-                [Markup.button.webApp("🚀 Открыть приложение", appUrl)],
-                [Markup.button.webApp("📜 User Agreement", agreementUrl)], 
-                [Markup.button.callback("🌐 Join Community", "community")],
-                [Markup.button.callback("❓ Support", "support")]
+                [Markup.button.webApp("🚀 Открыть приложение 🚀", appUrl)],
+                [Markup.button.webApp("📜 User Agreement 📜", agreementUrl)], 
+                [Markup.button.callback("🌐 Join Community 🌐", "community")],
+                [Markup.button.callback("❓ Support", "support ❓")]
             ]));
         });
 };
