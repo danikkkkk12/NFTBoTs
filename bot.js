@@ -22,7 +22,6 @@
 const { Telegraf } = require("telegraf");
 require("dotenv").config();
 const mongoose = require("mongoose");
-const User = require("./models/user");
 const commands = require("./commands.js");
 const events = require("./events.js");
 

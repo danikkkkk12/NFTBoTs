@@ -1,5 +1,6 @@
 const { Markup } = require("telegraf");
 const fs = require("fs");
+const User = require("./models/user");
 
 const appUrl = "https://danikkkkk12.github.io/nftbot/";
 const agreementUrl = "https://example.com/user-agreement";
