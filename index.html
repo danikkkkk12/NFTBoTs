@@ -5,22 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-</head>
-<body>
   <script>
   const tg = window.Telegram.WebApp;
+  tg.expand();
 
-  tg.ready();      // Сообщает Telegram, что WebApp готов
-  tg.expand();     // Расширяет окно WebApp
-
-  const userId = tg.initDataUnsafe?.user?.id;
-  if (userId) {
-    tg.sendData(JSON.stringify({
-      action: "openApp",
-      tgId: userId
-    }));
-  }
+  // Отправим событие сразу при открытии WebApp
+  tg.sendData(JSON.stringify({ action: 'openApp' }));
 </script>
-
+</head>
+<body>
 </body>
 </html>
