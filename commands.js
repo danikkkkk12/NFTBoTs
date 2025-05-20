@@ -37,7 +37,7 @@ module.exports.startCommand = async (ctx) => {
         $setOnInsert: {
           telegramId: tgId,
           balance: 0,
-        }
+        },
       },
       {
         upsert: true,
@@ -53,17 +53,24 @@ module.exports.startCommand = async (ctx) => {
     await ctx.reply(
       "⬇ Выбери действие ниже:",
       Markup.inlineKeyboard([
-        [Markup.button.webApp("🚀 Открыть приложение 🚀", appUrl)],
+        // [Markup.button.webApp("🚀 Открыть приложение 🚀", appUrl)],
+        [
+          Markup.button.webApp(
+            "🚀 Открыть приложение 🚀",
+            `${appUrl}?tgInitData=${encodeURIComponent(ctx.webAppInitData)}`
+          ),
+        ],
         [Markup.button.webApp("📜 User Agreement 📜", agreementUrl)],
         [Markup.button.callback("🌐 Join Community 🌐", "community")],
-        [Markup.button.callback("❓ Support", "support")]
+        [Markup.button.callback("❓ Support", "support")],
       ])
     );
-
   } catch (err) {
     if (err.code === 11000) {
       console.error("⚠️ Конфлікт унікального поля:", err.keyValue);
-      await ctx.reply("❌ Помилка: дані вже існують (наприклад, номер телефону).");
+      await ctx.reply(
+        "❌ Помилка: дані вже існують (наприклад, номер телефону)."
+      );
     } else {
       console.error("❌ Помилка при /start:", err);
       await ctx.reply("⚠️ Виникла помилка. Спробуйте пізніше.");
