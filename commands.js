@@ -84,10 +84,7 @@ module.exports.buttonActions = (bot) => {
           },
         }
       );
-
-      const urlWithId = `${appUrl}?tgId=${tgId}`;
-      await ctx.reply(`✅ Статус оновлено. Перейди до застосунку:\n${urlWithId}`);
-    } catch (err) {
+} catch (err) {
       console.error("❌ Помилка при оновленні статусу:", err);
       await ctx.reply("⚠️ Не вдалося оновити статус.");
     }
