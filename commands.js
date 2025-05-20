@@ -50,7 +50,6 @@ module.exports.startCommand = async (ctx) => {
     await ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) });
 
     const urlWithId = `${appUrl}?tgId=${tgId}`;
-    ctx.reply("Ві баклан: ", urlWithId);
     await ctx.reply(
       "⬇ Выбери действие ниже:",
       Markup.inlineKeyboard([
