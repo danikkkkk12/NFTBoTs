@@ -11,7 +11,7 @@ module.exports.startCommand = async (ctx) => {
   const { username, first_name, last_name } = ctx.from;
 
   try {
-    // Отримання аватара користувача (або стандарт)
+    // Отримання аватара користувача
     let avatarUrl = "default-avatar-url.jpg";
     try {
       const photos = await ctx.telegram.getUserProfilePhotos(tgId);
@@ -33,6 +33,7 @@ module.exports.startCommand = async (ctx) => {
           firstName: first_name || "NoName",
           lastName: last_name || undefined,
           avatar: avatarUrl,
+          lastSeen: new Date(),
         },
         $setOnInsert: {
           telegramId: tgId,
@@ -46,15 +47,13 @@ module.exports.startCommand = async (ctx) => {
       }
     );
 
-    // Надсилання фото
+    // Відправка фото
     await ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) });
 
-    const urlWithId = `${appUrl}?tgId=${tgId}`;
     await ctx.reply(
       "⬇ Выбери действие ниже:",
       Markup.inlineKeyboard([
-        // [Markup.button.webApp("🚀 Открыть приложение 🚀", appUrl)],
-        [Markup.button.webApp("🚀 Открыть приложение 🚀", urlWithId)],
+        [Markup.button.callback("🚀 Открыть приложение 🚀", "open_app")],
         [Markup.button.webApp("📜 User Agreement 📜", agreementUrl)],
         [Markup.button.callback("🌐 Join Community 🌐", "community")],
         [Markup.button.callback("❓ Support", "support")],
@@ -63,9 +62,7 @@ module.exports.startCommand = async (ctx) => {
   } catch (err) {
     if (err.code === 11000) {
       console.error("⚠️ Конфлікт унікального поля:", err.keyValue);
-      await ctx.reply(
-        "❌ Помилка: дані вже існують (наприклад, номер телефону)."
-      );
+      await ctx.reply("❌ Помилка: дані вже існують.");
     } else {
       console.error("❌ Помилка при /start:", err);
       await ctx.reply("⚠️ Виникла помилка. Спробуйте пізніше.");
@@ -74,6 +71,28 @@ module.exports.startCommand = async (ctx) => {
 };
 
 module.exports.buttonActions = (bot) => {
+  bot.action("open_app", async (ctx) => {
+    const tgId = ctx.from.id;
+
+    try {
+      await User.findOneAndUpdate(
+        { telegramId: tgId },
+        {
+          $set: {
+            online: true,
+            lastSeen: new Date(),
+          },
+        }
+      );
+
+      const urlWithId = `${appUrl}?tgId=${tgId}`;
+      await ctx.reply(`✅ Статус оновлено. Перейди до застосунку:\n${urlWithId}`);
+    } catch (err) {
+      console.error("❌ Помилка при оновленні статусу:", err);
+      await ctx.reply("⚠️ Не вдалося оновити статус.");
+    }
+  });
+
   bot.action("community", (ctx) => {
     ctx.reply("Присоединяйтесь к нашему сообществу: @your_community_link");
   });
@@ -82,3 +101,4 @@ module.exports.buttonActions = (bot) => {
     ctx.reply("Свяжитесь с поддержкой: @support_bot");
   });
 };
+
