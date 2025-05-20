@@ -6,7 +6,7 @@ const appUrl = "https://danikkkkk12.github.io/nftbot/";
 const agreementUrl = "https://example.com/user-agreement";
 const imagePath = "./content/nft.png";
 
-// Функция для обновления активности пользователя
+// Улучшенная функция для логирования активности пользователя
 async function logUserAction(tgId, actionType) {
   try {
     await User.findOneAndUpdate(
@@ -30,7 +30,7 @@ module.exports.startCommand = async (ctx) => {
     // Логируем действие start
     await logUserAction(tgId, 'start');
 
-    // Получаем аватар
+    // Получаем аватар (из первого кода)
     let avatarUrl = "default-avatar-url.jpg";
     try {
       const photos = await ctx.telegram.getUserProfilePhotos(tgId);
@@ -43,7 +43,7 @@ module.exports.startCommand = async (ctx) => {
       console.warn("⚠️ Не удалось получить аватар:", err.message);
     }
 
-    // Обновляем данные пользователя
+    // Обновляем данные пользователя (объединенная версия)
     const updatedUser = await User.findOneAndUpdate(
       { telegramId: tgId },
       {
@@ -67,7 +67,7 @@ module.exports.startCommand = async (ctx) => {
       }
     );
 
-    // Отправляем фото
+    // Отправляем фото (из первого кода)
     try {
       await ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) });
     } catch (err) {
@@ -95,12 +95,20 @@ module.exports.startCommand = async (ctx) => {
   }
 };
 
+// Улучшенная обработка действий (объединенная версия)
 module.exports.buttonActions = (bot) => {
-  // Обработка нажатия на кнопку веб-приложения
+  // Обработка нажатия на кнопку веб-приложения (из первого кода)
   bot.action(/webApp:(.+)/, async (ctx) => {
     const tgId = ctx.from.id;
     await logUserAction(tgId, 'openApp');
     // Дополнительная логика, если нужна
+  });
+
+  // Обработка данных из веб-приложения (объединенная версия)
+  bot.on('web_app_data', async (ctx) => {
+    const tgId = ctx.from.id;
+    await logUserAction(tgId, 'webAppInteraction');
+    ctx.reply("✅ Активность обновлена! Спасибо, что используешь приложение.");
   });
 
   bot.action("community", async (ctx) => {
@@ -113,12 +121,5 @@ module.exports.buttonActions = (bot) => {
     const tgId = ctx.from.id;
     await logUserAction(tgId, 'support');
     ctx.reply("Свяжитесь с поддержкой: @support_bot");
-  });
-
-  // Обработка данных из веб-приложения
-  bot.on('web_app_data', async (ctx) => {
-    const tgId = ctx.from.id;
-    await logUserAction(tgId, 'webAppInteraction');
-    // Обработка данных из веб-приложения
   });
 };
