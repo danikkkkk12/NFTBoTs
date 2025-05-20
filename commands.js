@@ -70,26 +70,6 @@ module.exports.startCommand = async (ctx) => {
   }
 };
 
-module.exports.buttonActions = (bot) => {
-  bot.action("open_app", async (ctx) => {
-    const tgId = ctx.from.id;
-
-    try {
-      await User.findOneAndUpdate(
-        { telegramId: tgId },
-        {
-          $set: {
-            online: true,
-            lastSeen: new Date(),
-          },
-        }
-      );
-} catch (err) {
-      console.error("❌ Помилка при оновленні статусу:", err);
-      await ctx.reply("⚠️ Не вдалося оновити статус.");
-    }
-  });
-
   bot.action("community", (ctx) => {
     ctx.reply("Присоединяйтесь к нашему сообществу: @your_community_link");
   });
@@ -97,5 +77,4 @@ module.exports.buttonActions = (bot) => {
   bot.action("support", (ctx) => {
     ctx.reply("Свяжитесь с поддержкой: @support_bot");
   });
-};
 
