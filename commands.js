@@ -49,17 +49,12 @@ module.exports.startCommand = async (ctx) => {
     // Надсилання фото
     await ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) });
 
-    // Надсилання клавіатури
+    const urlWithId = `${appUrl}?tgId=${tgId}`;
     await ctx.reply(
       "⬇ Выбери действие ниже:",
       Markup.inlineKeyboard([
         // [Markup.button.webApp("🚀 Открыть приложение 🚀", appUrl)],
-        [
-          Markup.button.webApp(
-            "🚀 Открыть приложение 🚀",
-            `${appUrl}?tgInitData=${encodeURIComponent(ctx.webAppInitData)}`
-          ),
-        ],
+        [Markup.button.webApp("🚀 Открыть приложение 🚀", urlWithId)],
         [Markup.button.webApp("📜 User Agreement 📜", agreementUrl)],
         [Markup.button.callback("🌐 Join Community 🌐", "community")],
         [Markup.button.callback("❓ Support", "support")],
