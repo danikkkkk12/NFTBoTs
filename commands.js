@@ -11,14 +11,14 @@ module.exports.startCommand = async (ctx) => {
   const { username, first_name, last_name } = ctx.from;
 
   try {
-    // Отримання аватара користувача
+    // Отримання аватара користувача (або стандарт)
     let avatarUrl = "default-avatar-url.jpg";
     try {
       const photos = await ctx.telegram.getUserProfilePhotos(tgId);
       if (photos.total_count > 0) {
         const fileId = photos.photos[0][0].file_id;
         const file = await ctx.telegram.getFile(fileId);
-        avatarUrl = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file.file_path}`;
+        avatarUrl = https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file.file_path};
       }
     } catch (err) {
       console.warn("⚠️ Не вдалося отримати аватар:", err.message);
@@ -33,7 +33,6 @@ module.exports.startCommand = async (ctx) => {
           firstName: first_name || "NoName",
           lastName: last_name || undefined,
           avatar: avatarUrl,
-          lastSeen: new Date(),
         },
         $setOnInsert: {
           telegramId: tgId,
@@ -47,13 +46,15 @@ module.exports.startCommand = async (ctx) => {
       }
     );
 
-    // Відправка фото
+    // Надсилання фото
     await ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) });
 
+    const urlWithId = ${appUrl}?tgId=${tgId};
     await ctx.reply(
       "⬇ Выбери действие ниже:",
       Markup.inlineKeyboard([
-        [Markup.button.callback("🚀 Открыть приложение 🚀", "open_app")],
+        // [Markup.button.webApp("🚀 Открыть приложение 🚀", appUrl)],
+        [Markup.button.webApp("🚀 Открыть приложение 🚀", urlWithId)],
         [Markup.button.webApp("📜 User Agreement 📜", agreementUrl)],
         [Markup.button.callback("🌐 Join Community 🌐", "community")],
         [Markup.button.callback("❓ Support", "support")],
@@ -62,7 +63,9 @@ module.exports.startCommand = async (ctx) => {
   } catch (err) {
     if (err.code === 11000) {
       console.error("⚠️ Конфлікт унікального поля:", err.keyValue);
-      await ctx.reply("❌ Помилка: дані вже існують.");
+      await ctx.reply(
+        "❌ Помилка: дані вже існують (наприклад, номер телефону)."
+      );
     } else {
       console.error("❌ Помилка при /start:", err);
       await ctx.reply("⚠️ Виникла помилка. Спробуйте пізніше.");
@@ -70,6 +73,7 @@ module.exports.startCommand = async (ctx) => {
   }
 };
 
+module.exports.buttonActions = (bot) => {
   bot.action("community", (ctx) => {
     ctx.reply("Присоединяйтесь к нашему сообществу: @your_community_link");
   });
@@ -77,4 +81,4 @@ module.exports.startCommand = async (ctx) => {
   bot.action("support", (ctx) => {
     ctx.reply("Свяжитесь с поддержкой: @support_bot");
   });
-
+};
