@@ -18,7 +18,7 @@ module.exports.startCommand = async (ctx) => {
       if (photos.total_count > 0) {
         const fileId = photos.photos[0][0].file_id;
         const file = await ctx.telegram.getFile(fileId);
-        avatarUrl = https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file.file_path};
+        avatarUrl = `https://api.telegram.org/file/bot${process.env.BOT_TOKEN}/${file.file_path}`;
       }
     } catch (err) {
       console.warn("⚠️ Не вдалося отримати аватар:", err.message);
@@ -29,9 +29,9 @@ module.exports.startCommand = async (ctx) => {
       { telegramId: tgId },
       {
         $set: {
-          username: username || undefined,
+          username: username || null,
           firstName: first_name || "NoName",
-          lastName: last_name || undefined,
+          lastName: last_name || null,
           avatar: avatarUrl,
         },
         $setOnInsert: {
@@ -46,14 +46,18 @@ module.exports.startCommand = async (ctx) => {
       }
     );
 
-    // Надсилання фото
-    await ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) });
+    // Надсилання фото з обробкою помилок
+    try {
+      await ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) });
+    } catch (err) {
+      console.warn("⚠️ Не вдалося відправити зображення:", err.message);
+      // Продовжуємо роботу навіть якщо зображення не відправилося
+    }
 
-    const urlWithId = ${appUrl}?tgId=${tgId};
+    const urlWithId = `${appUrl}?tgId=${tgId}`;
     await ctx.reply(
       "⬇ Выбери действие ниже:",
       Markup.inlineKeyboard([
-        // [Markup.button.webApp("🚀 Открыть приложение 🚀", appUrl)],
         [Markup.button.webApp("🚀 Открыть приложение 🚀", urlWithId)],
         [Markup.button.webApp("📜 User Agreement 📜", agreementUrl)],
         [Markup.button.callback("🌐 Join Community 🌐", "community")],
