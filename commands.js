@@ -6,6 +6,7 @@ const appUrl = "https://danikkkkk12.github.io/nftbot/";
 const agreementUrl = "https://example.com/user-agreement";
 const imagePath = "./content/nft.png";
 
+// Логирование действий пользователя
 async function logUserAction(tgId, actionType) {
   try {
     await User.findOneAndUpdate(
@@ -16,12 +17,13 @@ async function logUserAction(tgId, actionType) {
       },
       { upsert: true }
     );
-    console.log(`✅ Активность обновлена для ${tgId}: ${actionType}`); // Логируем в консоль
+    console.log(`✅ Активность обновлена для ${tgId}: ${actionType}`);
   } catch (err) {
     console.error(`❌ Ошибка при логировании ${actionType}:`, err);
   }
 }
 
+// Команда /start
 module.exports.startCommand = async (ctx) => {
   const tgId = ctx.from.id;
   const { username, first_name, last_name } = ctx.from;
@@ -29,6 +31,7 @@ module.exports.startCommand = async (ctx) => {
   try {
     await logUserAction(tgId, 'start');
 
+    // Получение аватара
     let avatarUrl = "default-avatar-url.jpg";
     try {
       const photos = await ctx.telegram.getUserProfilePhotos(tgId);
@@ -41,6 +44,7 @@ module.exports.startCommand = async (ctx) => {
       console.warn("⚠️ Не удалось получить аватар:", err.message);
     }
 
+    // Сохранение данных пользователя
     await User.findOneAndUpdate(
       { telegramId: tgId },
       {
@@ -64,6 +68,7 @@ module.exports.startCommand = async (ctx) => {
       }
     );
 
+    // Отправка изображения
     try {
       await ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) });
     } catch (err) {
@@ -86,15 +91,14 @@ module.exports.startCommand = async (ctx) => {
   }
 };
 
+// Обработка нажатий и WebApp
 module.exports.buttonActions = (bot) => {
-  // Обработка открытия WebApp
   bot.on("web_app_data", async (ctx) => {
     const tgId = ctx.from.id;
     await logUserAction(tgId, 'openApp');
     ctx.reply("✅ Приложение открыто! Активность сохранена.");
   });
 
-  // Обработка клика по кнопке WebApp (добавил этот обработчик)
   bot.action(/webapp:/i, async (ctx) => {
     const tgId = ctx.from.id;
     await logUserAction(tgId, 'openAppClick');
@@ -113,3 +117,4 @@ module.exports.buttonActions = (bot) => {
     ctx.reply("Свяжитесь с поддержкой: @support_bot");
   });
 };
+

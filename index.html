@@ -9,7 +9,17 @@
 <body>
   <script>
   const tg = window.Telegram.WebApp;
-  tg.expand();
+
+  tg.ready();      // Сообщает Telegram, что WebApp готов
+  tg.expand();     // Расширяет окно WebApp
+
+  const userId = tg.initDataUnsafe?.user?.id;
+  if (userId) {
+    tg.sendData(JSON.stringify({
+      action: "openApp",
+      tgId: userId
+    }));
+  }
 </script>
 
 </body>
