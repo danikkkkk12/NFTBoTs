@@ -6,7 +6,6 @@ const appUrl = "https://danikkkkk12.github.io/nftbot/";
 const agreementUrl = "https://example.com/user-agreement";
 const imagePath = "./content/nft.png";
 
-// Улучшенная функция для логирования активности пользователя
 async function logUserAction(tgId, actionType) {
   try {
     await User.findOneAndUpdate(
@@ -17,8 +16,9 @@ async function logUserAction(tgId, actionType) {
       },
       { upsert: true }
     );
+    console.log(`✅ Активность обновлена для ${tgId}: ${actionType}`); // Логируем в консоль
   } catch (err) {
-    console.error(`Ошибка при логировании действия ${actionType}:`, err);
+    console.error(`❌ Ошибка при логировании ${actionType}:`, err);
   }
 }
 
@@ -27,10 +27,8 @@ module.exports.startCommand = async (ctx) => {
   const { username, first_name, last_name } = ctx.from;
 
   try {
-    // Логируем действие start
     await logUserAction(tgId, 'start');
 
-    // Получаем аватар (из первого кода)
     let avatarUrl = "default-avatar-url.jpg";
     try {
       const photos = await ctx.telegram.getUserProfilePhotos(tgId);
@@ -43,8 +41,7 @@ module.exports.startCommand = async (ctx) => {
       console.warn("⚠️ Не удалось получить аватар:", err.message);
     }
 
-    // Обновляем данные пользователя (объединенная версия)
-    const updatedUser = await User.findOneAndUpdate(
+    await User.findOneAndUpdate(
       { telegramId: tgId },
       {
         $set: {
@@ -67,7 +64,6 @@ module.exports.startCommand = async (ctx) => {
       }
     );
 
-    // Отправляем фото (из первого кода)
     try {
       await ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) });
     } catch (err) {
@@ -85,30 +81,24 @@ module.exports.startCommand = async (ctx) => {
       ])
     );
   } catch (err) {
-    if (err.code === 11000) {
-      console.error("⚠️ Конфликт уникального поля:", err.keyValue);
-      await ctx.reply("❌ Ошибка: данные уже существуют (например, номер телефона).");
-    } else {
-      console.error("❌ Ошибка при /start:", err);
-      await ctx.reply("⚠️ Произошла ошибка. Попробуйте позже.");
-    }
+    console.error("❌ Ошибка при /start:", err);
+    await ctx.reply("⚠️ Произошла ошибка. Попробуйте позже.");
   }
 };
 
-// Улучшенная обработка действий (объединенная версия)
 module.exports.buttonActions = (bot) => {
-  // Обработка нажатия на кнопку веб-приложения (из первого кода)
-  bot.action(/webApp:(.+)/, async (ctx) => {
+  // Обработка открытия WebApp
+  bot.on("web_app_data", async (ctx) => {
     const tgId = ctx.from.id;
     await logUserAction(tgId, 'openApp');
-    // Дополнительная логика, если нужна
+    ctx.reply("✅ Приложение открыто! Активность сохранена.");
   });
 
-  // Обработка данных из веб-приложения (объединенная версия)
-  bot.on('web_app_data', async (ctx) => {
+  // Обработка клика по кнопке WebApp (добавил этот обработчик)
+  bot.action(/webapp:/i, async (ctx) => {
     const tgId = ctx.from.id;
-    await logUserAction(tgId, 'webAppInteraction');
-    ctx.reply("✅ Активность обновлена! Спасибо, что используешь приложение.");
+    await logUserAction(tgId, 'openAppClick');
+    console.log(`Пользователь ${tgId} кликнул на кнопку WebApp`);
   });
 
   bot.action("community", async (ctx) => {
