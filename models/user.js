@@ -3,45 +3,18 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
-    username: {
-      type: String,
-      trim: true,
-      unique: true,
-      sparse: true,
-      default: undefined
-    },
-    firstName: { 
-      type: String, 
-      required: true,
-      trim: true
-    },
-    lastName: { 
-      type: String, 
-      trim: true,
-      default: undefined
-    },
+    username: { type: String, trim: true, unique: true, sparse: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, default: "" },
     phone: {
       type: String,
       match: /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/,
       unique: true,
-      sparse: true,
-      default: undefined
     },
-    avatar: { 
-      type: String, 
-      default: "default-avatar-url.jpg" 
-    },
-    telegramId: { 
-      type: Number, 
-      unique: true,
-      required: true,
-      index: true
-    },
-    balance: { 
-      type: Number, 
-      default: 0, 
-      min: 0 
-    },
+    avatar: { type: String, default: "default-avatar-url.jpg" },
+    telegramId: { type: Number, unique: true },
+
+    balance: { type: Number, default: 0, min: 0 },
     gameHistory: [
       {
         date: { type: Date, default: Date.now },
@@ -56,39 +29,17 @@ const userSchema = new Schema(
         count: { type: Number, default: 1 },
       },
     ],
-    language: { 
-      type: String, 
-      default: "ru", 
-      enum: ["ru", "en"] 
-    },
-    lastActive: { 
-      type: Date, 
-      default: Date.now 
-    },
-    isAdmin: { 
-      type: Boolean, 
-      default: false 
-    },
+    enteredPromocodes: [
+      {
+        code: { type: String, required: true },
+      },
+    ],
+
+    language: { type: String, default: "ru", enum: ["ru", "en"] },
+    lastActive: { type: Date, default: Date.now },
+    isAdmin: { type: Boolean, default: false },
   },
-  { 
-    timestamps: true,
-    minimize: false,
-    autoIndex: true
-  }
+  { timestamps: true }
 );
 
-userSchema.statics.syncUserIndexes = async function() {
-  try {
-    await this.model('User').syncIndexes();
-    console.log('✅ Индексы пользователя синхронизированы');
-  } catch (err) {
-    console.error('❌ Ошибка синхронизации индексов:', err);
-  }
-};
-
-const User = mongoose.model("User", userSchema);
-
-User.syncUserIndexes();
-
-module.exports = User;
-
+module.exports = mongoose.model("User", userSchema);
