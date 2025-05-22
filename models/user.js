@@ -26,7 +26,7 @@ const userSchema = new Schema(
     ],
     inventory: [
       {
-        itemId: { type: Schema.Types.ObjectId, ref: "Item" },
+        itemId: { type: String, required: true },
         count: { type: Number, default: 1 },
       },
     ],
