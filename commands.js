@@ -13,7 +13,7 @@ async function logUserAction(tgId, actionType) {
       { telegramId: tgId },
       {
         $set: { lastActive: new Date() },
-        $inc: { [`actions.${actionType}`]: 1 }
+        $inc: { [`actions.${actionType}`]: 1 },
       },
       { upsert: true }
     );
@@ -29,7 +29,7 @@ module.exports.startCommand = async (ctx) => {
   const { username, first_name, last_name } = ctx.from;
 
   try {
-    await logUserAction(tgId, 'start');
+    await logUserAction(tgId, "start");
 
     // Получение аватара
     let avatarUrl = "default-avatar-url.jpg";
@@ -53,18 +53,19 @@ module.exports.startCommand = async (ctx) => {
           firstName: first_name || "NoName",
           lastName: last_name || undefined,
           avatar: avatarUrl,
-          lastActive: new Date()
+          lastActive: new Date(),
         },
         $setOnInsert: {
           telegramId: tgId,
           balance: 0,
-          actions: {}
-        }
+          actions: {},
+          enteredPromocodes: [], 
+        },
       },
       {
         upsert: true,
         new: true,
-        setDefaultsOnInsert: true
+        setDefaultsOnInsert: true,
       }
     );
 
@@ -95,26 +96,25 @@ module.exports.startCommand = async (ctx) => {
 module.exports.buttonActions = (bot) => {
   bot.on("web_app_data", async (ctx) => {
     const tgId = ctx.from.id;
-    await logUserAction(tgId, 'openApp');
+    await logUserAction(tgId, "openApp");
     ctx.reply("✅ Приложение открыто! Активность сохранена.");
   });
 
   bot.action(/webapp:/i, async (ctx) => {
     const tgId = ctx.from.id;
-    await logUserAction(tgId, 'openAppClick');
+    await logUserAction(tgId, "openAppClick");
     console.log(`Пользователь ${tgId} кликнул на кнопку WebApp`);
   });
 
   bot.action("community", async (ctx) => {
     const tgId = ctx.from.id;
-    await logUserAction(tgId, 'joinCommunity');
+    await logUserAction(tgId, "joinCommunity");
     ctx.reply("Присоединяйтесь к нашему сообществу: @your_community_link");
   });
 
   bot.action("support", async (ctx) => {
     const tgId = ctx.from.id;
-    await logUserAction(tgId, 'support');
+    await logUserAction(tgId, "support");
     ctx.reply("Свяжитесь с поддержкой: @support_bot");
   });
 };
-
