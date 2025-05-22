@@ -107,7 +107,7 @@ module.exports.buttonActions = (bot) => {
   bot.action("community", async (ctx) => {
     const tgId = ctx.from.id;
     await logUserAction(tgId, "joinCommunity");
-    ctx.reply("Присоединяйтесь к нашему сообществу: @your_community_link");
+    ctx.reply("Присоединяйтесь к нашему сообществу: @NFTgo777");
   });
 
   bot.action("support", async (ctx) => {
