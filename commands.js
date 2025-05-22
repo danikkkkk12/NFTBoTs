@@ -113,6 +113,6 @@ module.exports.buttonActions = (bot) => {
   bot.action("support", async (ctx) => {
     const tgId = ctx.from.id;
     await logUserAction(tgId, "support");
-    ctx.reply("Свяжитесь с поддержкой: @support_bot");
+    ctx.reply("Свяжитесь с поддержкой: @BossBelfort");
   });
 };
