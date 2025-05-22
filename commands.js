@@ -44,7 +44,6 @@ module.exports.startCommand = async (ctx) => {
       console.warn("⚠️ Не удалось получить аватар:", err.message);
     }
 
-    // Сохранение данных пользователя
     await User.findOneAndUpdate(
       { telegramId: tgId },
       {
@@ -69,7 +68,6 @@ module.exports.startCommand = async (ctx) => {
       }
     );
 
-    // Отправка изображения
     try {
       await ctx.replyWithPhoto({ source: fs.createReadStream(imagePath) });
     } catch (err) {
