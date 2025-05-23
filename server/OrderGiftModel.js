@@ -52,7 +52,7 @@ exports.orderGift = async (telegramId, winGiftId) => {
         }
 
         // 5. Запуск Python-скрипта
-        const scriptPath = path.resolve(__dirname, '../../python/sendGift.py');
+        const scriptPath = path.resolve(__dirname, 'python/sendGift.py');
         const python = spawn('python3', [scriptPath, telegramId.toString(), gift.name]);
 
         python.stdout.on('data', data => console.log(`stdout: ${data}`));
