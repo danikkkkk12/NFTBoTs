@@ -3,7 +3,7 @@ const { spawn } = require('child_process');
 const path = require('path');
 
 exports.orderGift = async (telegramId, winGiftId) => {
-    const client = new MongoClient(process.env.MONGODB_URI);
+    const client = new MongoClient(process.env.mongoURI);
 
     try {
         await client.connect();
